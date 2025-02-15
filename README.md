@@ -4,7 +4,7 @@ An automation agent that processes various data operations tasks using LLMs. Bui
 
 ## Prerequisites
 
-- Docker installed and running
+- Docker/Podman installed and running
 - AI Proxy token (set as AIPROXY_TOKEN environment variable)
 - At least 2GB of free disk space
 - Internet connection (for pulling Docker image and LLM API calls)
@@ -18,9 +18,14 @@ mkdir -p data
 # 2. Set your AI Proxy token
 export AIPROXY_TOKEN=your_token_here
 
-# 3. Pull and run the Docker container
+# 3. Pull and run the container (using Docker or Podman)
+# Using Docker:
 docker pull sokh1125/tdsproject
 docker run -p 8000:8000 -v $(pwd)/data:/data -e AIPROXY_TOKEN=$AIPROXY_TOKEN sokh1125/tdsproject
+
+# Using Podman:
+podman pull sokh1125/tdsproject
+podman run -p 8000:8000 -v $(pwd)/data:/data -e AIPROXY_TOKEN=$AIPROXY_TOKEN sokh1125/tdsproject
 ```
 
 The API will be available at `http://localhost:8000`
@@ -67,25 +72,31 @@ curl "http://localhost:8000/read?path=/data/format.md"
 
 ## Detailed Setup
 
-### Using Docker (Recommended)
+### Using Container Runtime (Docker/Podman Recommended)
 ```bash
-# Pull the image
+# Using Docker
 docker pull sokh1125/tdsproject
-
-# Create data directory
-mkdir -p data
-
-# Set environment variable
-export AIPROXY_TOKEN=your_token_here
-
-# Run the container
 docker run -p 8000:8000 \
   -v $(pwd)/data:/data \
   -e AIPROXY_TOKEN=$AIPROXY_TOKEN \
   sokh1125/tdsproject
 
+# Using Podman
+podman pull sokh1125/tdsproject
+podman run -p 8000:8000 \
+  -v $(pwd)/data:/data \
+  -e AIPROXY_TOKEN=$AIPROXY_TOKEN \
+  sokh1125/tdsproject
+
 # For Windows PowerShell, use:
+# Docker:
 docker run -p 8000:8000 `
+  -v ${PWD}/data:/data `
+  -e AIPROXY_TOKEN=$env:AIPROXY_TOKEN `
+  sokh1125/tdsproject
+
+# Podman:
+podman run -p 8000:8000 `
   -v ${PWD}/data:/data `
   -e AIPROXY_TOKEN=$env:AIPROXY_TOKEN `
   sokh1125/tdsproject
@@ -172,6 +183,23 @@ docker logs $(docker ps -a | grep sokh1125/tdsproject | awk '{print $1}')
 
 - `AIPROXY_TOKEN`: Your AI Proxy token for LLM access (Required)
 - `PORT`: Port to run the server on (Optional, default: 8000)
+
+## Important Notes
+
+1. **AI Proxy Token Usage**
+   - Use the AIPROXY_TOKEN environment variable
+   - DO NOT commit your AI Proxy token to the repository
+   - Token has a $1 limit; contact TDS team if you need more
+   - Uses GPT-4o-Mini model through AI Proxy
+
+2. **Performance Requirements**
+   - Each API call (/run and /read) must complete within 20 seconds
+   - Keep prompts short and concise for optimal performance
+
+3. **Project Submission**
+   - GitHub Repository: https://github.com/sokh1125/tdsproject1
+   - Docker Image: sokh1125/tdsproject
+   - Submit these URLs in the provided Google Form
 
 ## License
 
