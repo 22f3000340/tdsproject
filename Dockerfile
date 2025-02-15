@@ -1,27 +1,38 @@
-FROM python:3.13-slim
+FROM python:3.12-slim-bookworm
 
-WORKDIR /app
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install essential system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
     git \
+    nodejs \
+    npm \
     && rm -rf /var/lib/apt/lists/*
 
+# Download and install uv
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN chmod +x /uv-installer.sh && sh /uv-installer.sh && rm /uv-installer.sh
+
+# Ensure uv is available in the PATH
+ENV PATH="/root/.local/bin:$PATH"
+
+# Create the /data folder
+RUN mkdir -p /data
+
+# Set up the application directory
+WORKDIR /app
+
+# Copy application files
+COPY app.py /app/
+COPY tasksA.py /app/
+COPY tasksB.py /app/
+COPY requirements.txt /app/
+
 # Install Python dependencies
-COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Create data directory with correct permissions
-RUN mkdir -p /data && chown -R nobody:nogroup /data
+# Install prettier globally
+RUN npm install -g prettier@3.4.2
 
-# Copy application code
-COPY . .
-
-# Switch to non-root user
-USER nobody
-
-# Expose port
-EXPOSE 8000
-
-# Run the application
+# Explicitly set the correct binary path and start the application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -1,0 +1,11 @@
+# Core requirements
+fastapi==0.115.8
+uvicorn==0.34.0
+python-dotenv==1.0.1
+httpx==0.28.1
+aiofiles==24.1.0
+
+# ML/Data Science (only if needed)
+scikit-learn==1.6.1
+pandas==2.2.3
+matplotlib==3.10.0 

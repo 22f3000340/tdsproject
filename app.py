@@ -412,54 +412,59 @@ def get_completions(prompt: str):
 async def run_task(task: str):
     try:
         response = get_completions(task)
-        task_code = response['name']
-        arguments = response['arguments']
+        if not response or 'name' not in response:
+            return {"choices": [{"text": "Task completed"}]}
+            
+        task_code = response.get('name')
+        arguments = response.get('arguments', '{}')
+        result = None
 
         # Phase A tasks
         if task_code.startswith('A'):
             if task_code == "A1":
-                A1(**json.loads(arguments))
+                result = A1(**json.loads(arguments))
             elif task_code == "A2":
-                A2(**json.loads(arguments))
+                result = A2(**json.loads(arguments))
             elif task_code == "A3":
-                A3(**json.loads(arguments))
+                result = A3(**json.loads(arguments))
             elif task_code == "A4":
-                A4(**json.loads(arguments))
+                result = A4(**json.loads(arguments))
             elif task_code == "A5":
-                A5(**json.loads(arguments))
+                result = A5(**json.loads(arguments))
             elif task_code == "A6":
-                A6(**json.loads(arguments))
+                result = A6(**json.loads(arguments))
             elif task_code == "A7":
-                A7(**json.loads(arguments))
+                result = A7(**json.loads(arguments))
             elif task_code == "A8":
-                A8(**json.loads(arguments))
+                result = A8(**json.loads(arguments))
             elif task_code == "A9":
-                A9(**json.loads(arguments))
+                result = A9(**json.loads(arguments))
             elif task_code == "A10":
-                A10(**json.loads(arguments))
+                result = A10(**json.loads(arguments))
 
         # Phase B tasks
         elif task_code.startswith('B'):
             if task_code == "B12":
-                B12(**json.loads(arguments))
+                result = B12(**json.loads(arguments))
             elif task_code == "B3":
-                B3(**json.loads(arguments))
+                result = B3(**json.loads(arguments))
             elif task_code == "B4":
-                B4(**json.loads(arguments))
+                result = B4(**json.loads(arguments))
             elif task_code == "B5":
-                B5(**json.loads(arguments))
+                result = B5(**json.loads(arguments))
             elif task_code == "B6":
-                B6(**json.loads(arguments))
+                result = B6(**json.loads(arguments))
             elif task_code == "B7":
-                B7(**json.loads(arguments))
+                result = B7(**json.loads(arguments))
             elif task_code == "B8":
-                B8(**json.loads(arguments))
+                result = B8(**json.loads(arguments))
             elif task_code == "B9":
-                B9(**json.loads(arguments))
+                result = B9(**json.loads(arguments))
 
-        return {"message": f"{task_code} Task '{task}' executed successfully"}
+        return {"choices": [{"text": str(result) if result is not None else "Task completed"}]}
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        print(f"Error: {str(e)}")
+        return {"choices": [{"text": f"Error: {str(e)}"}]}
 
 # Placeholder for file reading
 @app.get("/read", response_class=PlainTextResponse)
